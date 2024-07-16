@@ -11,33 +11,32 @@ function extractColumns(data, columnNames) {
   return extracted;
 }
 
-function loadCSV(
+module.exports = function loadCSV(
   filename,
   {
-    converters = {},
     dataColumns = [],
     labelColumns = [],
-    shuffle = true,
+    converters = {},
+    shuffle = false,
     splitTest = false
   }
 ) {
   let data = fs.readFileSync(filename, { encoding: 'utf-8' });
-  data = data.split('\n').map(row => row.split(','));
-  data = data.map(row => _.dropRightWhile(row, val => val === ''));
+  data = _.map(data.split('\n'), d => d.split(','));
+  data = _.dropRightWhile(data, val => _.isEqual(val, ['']));
   const headers = _.first(data);
 
-  data = data.map((row, index) => {
+  data = _.map(data, (row, index) => {
     if (index === 0) {
       return row;
     }
-
-    return row.map((element, index) => {
+    return _.map(row, (element, index) => {
       if (converters[headers[index]]) {
         const converted = converters[headers[index]](element);
         return _.isNaN(converted) ? element : converted;
       }
 
-      const result = parseFloat(element);
+      const result = parseFloat(element.replace('"', ''));
       return _.isNaN(result) ? element : result;
     });
   });
@@ -59,27 +58,12 @@ function loadCSV(
       : Math.floor(data.length / 2);
 
     return {
-      features: data.slice(0, trainSize),
-      labels: labels.slice(0, trainSize),
-      testFeatures: data.slice(trainSize),
-      testLabels: labels.slice(trainSize)
+      features: data.slice(trainSize),
+      labels: labels.slice(trainSize),
+      testFeatures: data.slice(0, trainSize),
+      testLabels: labels.slice(0, trainSize)
     };
   } else {
     return { features: data, labels };
   }
-}
-
-const { features, labels, testFeatures, testLabels } = loadCSV('data.csv', {
-  dataColumns: ['height', 'value'],
-  labelColumns: ['passed'],
-  shuffle: true,
-  splitTest: false,
-  converters: {
-    passed: val => (val === 'TRUE' ? 1 : 0)
-  }
-});
-
-console.log('Features', features);
-console.log('Labels', labels);
-console.log('testFeatures', testFeatures);
-console.log('testLabels', testLabels);
+};
