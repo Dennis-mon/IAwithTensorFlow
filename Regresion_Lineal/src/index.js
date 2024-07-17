@@ -42,5 +42,5 @@ console.log("testLabels: ", testLabels );
 
 regresionPrueba.train();
 
-console.log('Update M => ', regresionPrueba.m);
-console.log('Update B => ', regresionPrueba.b);
+console.log('Update b => ', regresionPrueba.weights.get(0,0));
+console.log('Update m => ', regresionPrueba.weights.get(1,0));
