@@ -4,15 +4,12 @@ const _ = require('lodash');            // Loadash
 //Calse encargada de toda la lógia de regresión lineal
 class RegresionLineal{
 
-    // Features = , Labels = , Options = 
+    //Features = , Labels = , Options = 
     constructor(features, labels, options){
 
         //Declaramos los valores independientes (features) y los valores dependientes (labels)
-        this.features = tf.tensor(features);
+        this.features = this.processFeatures(features);
         this.labels = tf.tensor(labels);
-
-        //concatena a nuestras featuers una columna de todo 1
-        this.features = tf.ones( [this.features.shape[0],1] ).concat(this.features,1);
 
         //Declaramos las opciones
         this.options = Object.assign({ learningRate: 0.1, iterations: 1000 }, options);
@@ -23,7 +20,7 @@ class RegresionLineal{
         this.weights = tf.zeros([2,1])
     }
 
-    // Entrenamiento de la IA el número de veces que tenga la variable 'iterations' asociado
+    //Entrenamiento de la IA el número de veces que tenga la variable 'iterations' asociado
     train(){
         for(let i = 0; i < this.options.iterations; i++){
             this.gradientDescent();
@@ -52,11 +49,11 @@ class RegresionLineal{
     }*/
 
     gradientDescent(){
-        //esta funcion es para multiplicacion entre matrices
+        //Esta funcion es para multiplicacion entre matrices
         const currentGuess = this.features.matMul(this.weights);
         const differences = currentGuess.sub(this.labels);
 
-        //calculo de pendiente de MSE respecto m y b
+        //Calculo de pendiente de MSE respecto m y b
         const slopes = this.features
             .transpose()        //para poder multiplicar la diferencia por las features la transponemos
             .matMul(differences)
@@ -68,11 +65,8 @@ class RegresionLineal{
 
     test(testFeatures, testLabels){
         //Convertimos los parámtros en tensores
-        testFeatures = tf.tensor(testFeatures);
+        testFeatures = this.processFeatures(testFeatures);
         testLabels = tf.tensor(testLabels);
-
-        //concatena a nuestras testfeatures una columna de todo 1
-        testFeatures = tf.ones([testFeatures.shape[0],1]).concat(testFeatures,1);
 
         //Generamos las predicciones para nuestro algoritmo entrenado
         const preditions = testFeatures.matMul(this.weights);
@@ -88,6 +82,16 @@ class RegresionLineal{
             .get();
 
         return 1 - res / tot;
+    }
+
+    processFeatures(features){
+        //Convertimos features en un tensor
+        features = tf.tensor(features);
+
+        //Concatena a nuestras featuers una columna de todo 1
+        features = tf.ones([features.shape[0], 1]).concat(features, 1);
+
+        return features;
     }
 }
 
