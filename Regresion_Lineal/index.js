@@ -1,6 +1,7 @@
-require('@tensorflow/tfjs-node');
-const tf = require('@tensorflow/tfjs');
-const loadCSV = require('./load-csv');
+require('@tensorflow/tfjs-node');       //  Tensorflow
+const tf = require('@tensorflow/tfjs'); //  Tensorflow
+const loadCSV = require('./load-csv');  //  Cargamos el archivo para leer CSVs
+const RegresionLineal = require('./regresion_lineal'); // Cargamos la clase encargada de realizar la regresión lineal
 
 const { features , labels, testFeatures, testLabels } = loadCSV('./cars.csv', {
     shuffle: true,
@@ -9,5 +10,11 @@ const { features , labels, testFeatures, testLabels } = loadCSV('./cars.csv', {
     labelColumns: ['mpg']
 })
 
-console.log('Hola mundo');
-console.log(features);
+const regresionPrueba = new RegresionLineal(features, labels, {
+    learningRate: 0.001,
+    iterations: 1
+});
+
+regresionPrueba.train();
+console.log('Update M => ', regresionPrueba.m);
+console.log('Update B => ', regresionPrueba.b);
