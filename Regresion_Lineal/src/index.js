@@ -31,16 +31,11 @@ const { features , labels, testFeatures, testLabels } = loadCSV(`${pathCSV}cars.
 })
 
 const regresionPrueba = new RegresionLineal(features, labels, {
-    learningRate: 0.00001,
+    learningRate: 0.0001,
     iterations: 100
 });
 
-console.log("features: ", features );
-console.log("labels: ", labels );
-console.log("testFeatures: ", testFeatures );
-console.log("testLabels: ", testLabels );
-
 regresionPrueba.train();
+const r = regresionPrueba.test(testFeatures, testLabels);
 
-console.log('Update b => ', regresionPrueba.weights.get(0,0));
-console.log('Update m => ', regresionPrueba.weights.get(1,0));
+console.log('R => ', r);
