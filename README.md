@@ -1,2 +1,2 @@
 # IAwithTensorFlow
-Algoritmos de IA desarrollados con la herramienta TensorFlow 
+En este repositorio vamos a implementar distintos algoritmos de IA para hacer pruebas con tensorflow
