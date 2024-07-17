@@ -7,7 +7,7 @@ class RegresionLineal{
     // Features = , Labels = , Options = 
     constructor(features, labels, options){
 
-        //Declaramos ...
+        //Declaramos los valores independientes (features) y los valores dependientes (labels)
         this.features = features;
         this.labels = labels;
 

@@ -11,8 +11,8 @@ const { features , labels, testFeatures, testLabels } = loadCSV('./cars.csv', {
 })
 
 const regresionPrueba = new RegresionLineal(features, labels, {
-    learningRate: 0.001,
-    iterations: 1
+    learningRate: 0.0001,
+    iterations: 100
 });
 
 regresionPrueba.train();
