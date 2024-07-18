@@ -26,20 +26,29 @@ console.log("testLabels: ", testLabels );*/
 const { features , labels, testFeatures, testLabels } = loadCSV(`${pathCSV}cars.csv`, ',', {
     shuffle: true,
     splitTest: 50,
-    dataColumns: ['horsepower'],
+    dataColumns: ['horsepower', 'weight', 'displacement'],
     labelColumns: ['mpg']
 })
 
 const regresionPrueba = new RegresionLineal(features, labels, {
-    learningRate: 0.01,
-    iterations: 2000
+    learningRate: 10,
+    iterations: 100
 });
 
-regresionPrueba.features.print();
+//regresionPrueba.features.print();
 
 regresionPrueba.train();
 const r = regresionPrueba.test(testFeatures, testLabels);
 
 console.log('Valor de B =>', regresionPrueba.weights.get(0,0));
-console.log('Valor de M =>', regresionPrueba.weights.get(1,0));
+console.log('Valor de M1 =>', regresionPrueba.weights.get(1,0));
+console.log('Valor de M2 =>', regresionPrueba.weights.get(2,0));
+console.log('Valor de M3 =>', regresionPrueba.weights.get(3,0));
 console.log('R => ', r);
+
+console.log('==========================')
+console.log('Prueba');
+console.log('Datos =>' , features[1]);
+console.log('Resultado =>' , labels[1]);
+const resultado = regresionPrueba.predictResult(features[1]);
+console.log(resultado);
