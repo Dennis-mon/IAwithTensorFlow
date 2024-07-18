@@ -10,6 +10,7 @@ class RegresionLineal{
         //Declaramos los valores independientes (features) y los valores dependientes (labels)
         this.features = this.processFeatures(features);
         this.labels = tf.tensor(labels);
+        this.mseHistory = [];
 
         //Declaramos las opciones
         this.options = Object.assign({ learningRate: 0.1, iterations: 1000 }, options);
@@ -17,13 +18,15 @@ class RegresionLineal{
         // Declaramos los valores de 'm' y 'b' que queremos encontrar para nuestra ecuación
         //b - indice 0
         //m - indice 1
-        this.weights = tf.zeros([2,1])
+        this.weights = tf.zeros([this.features.shape[1],1])
     }
 
     //Entrenamiento de la IA el número de veces que tenga la variable 'iterations' asociado
     train(){
         for(let i = 0; i < this.options.iterations; i++){
             this.gradientDescent();
+            this.recordMSE();
+            this.updateLearningRate();
         }
     }
 
@@ -87,13 +90,15 @@ class RegresionLineal{
     processFeatures(features){
         //Convertimos features en un tensor
         features = tf.tensor(features);
+
+        features.print();
         
         if(this.mean && this.variance){
             features = features.sub(this.mean).div(this.variance.pow(0.5));
         } else{
             features = this.standardize(features);
         }
-        
+
         //Concatena a nuestras featuers una columna de todo 1
         features = tf.ones([features.shape[0], 1]).concat(features, 1);
 
@@ -107,6 +112,52 @@ class RegresionLineal{
         this.variance = variance;
 
         return features.sub(mean).div(variance.pow(0.5));
+    }
+
+    recordMSE(){
+        const mse = this.features
+            .matMul(this.weights)
+            .sub(this.labels)
+            .pow(2)
+            .sum()
+            .div(this.features.shape[0])
+            .get();
+
+        this.mseHistory.unshift(mse);
+    }
+
+    updateLearningRate(){
+        if(this.mseHistory.length < 2){
+            return;
+        }
+
+        if(this.mseHistory[0] > this.mseHistory[1]){
+            this.options.learningRate /= 2;
+        } else {
+            this.options.learningRate *= 1.05;
+        }
+    }
+
+    predictResult(features){
+        features = tf.tensor(features);
+
+        features.print();
+
+        features = tf.reshape(features, [1,3]);
+
+        features.print();
+
+        features = features.sub(this.mean).div(this.variance.pow(0.5));
+
+        features.print();
+
+        features = tf.ones([features.shape[0], 1]).concat(features, 1);
+
+        features.print();
+
+        const preditions = features.matMul(this.weights);
+        preditions.print();
+        return preditions;
     }
 }
 
