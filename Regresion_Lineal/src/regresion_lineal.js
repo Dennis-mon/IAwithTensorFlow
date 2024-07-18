@@ -143,7 +143,7 @@ class RegresionLineal{
 
         features.print();
 
-        features = tf.reshape(features, [1,3]);
+        features = tf.reshape(features, [1, features.shape[0]]);
 
         features.print();
 
@@ -156,8 +156,7 @@ class RegresionLineal{
         features.print();
 
         const preditions = features.matMul(this.weights);
-        preditions.print();
-        return preditions;
+        return preditions.sum().get();
     }
 }
 

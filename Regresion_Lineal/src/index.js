@@ -50,4 +50,5 @@ console.log('==========================')
 console.log('Prueba');
 console.log('Datos =>' , features[1]);
 console.log('Resultado =>' , labels[1]);
-regresionPrueba.predictResult(features[1]);
+const resultado = regresionPrueba.predictResult(features[1]);
+console.log(resultado);
