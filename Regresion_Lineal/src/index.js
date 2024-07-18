@@ -5,47 +5,43 @@ const RegresionLineal = require('./regresion_lineal'); // Cargamos la clase enca
 
 const pathCSV = './src/csv/';
 
-/*const {features, labels, testFeatures, testLabels} = loadCSV(
-    `${pathCSV}datos.csv`,
-    ',', 
+//cargamos csv
+const { features , labels, testFeatures, testLabels } = loadCSV(
+    `${pathCSV}datos-marzo-horas.csv`,
+    ',',
     {
-        dataColumns: ['mes','dia'],
-        labelColumns: ['value'],
         shuffle: true,
-        splitTest: false,
-        converters:{}
+        splitTest: 9,
+        dataColumns: ['dia', 'mes', '0-24'],
+        labelColumns: ['value']
     }
 )
 
-console.log("features: ", features );
-console.log("labels: ", labels );
-console.log("testFeatures: ", testFeatures );
-console.log("testLabels: ", testLabels );*/
+//iniciamos regresion lineal parametrizada
+const regresionPrueba = new RegresionLineal(
+    features, 
+    labels,
+    {
+        learningRate: 10,
+        iterations: 100
+    }
+);
 
 
-const { features , labels, testFeatures, testLabels } = loadCSV(`${pathCSV}cars.csv`, ',', {
-    shuffle: true,
-    splitTest: 50,
-    dataColumns: ['horsepower', 'weight', 'displacement'],
-    labelColumns: ['mpg']
-})
-
-const regresionPrueba = new RegresionLineal(features, labels, {
-    learningRate: 10,
-    iterations: 100
-});
-
-//regresionPrueba.features.print();
-
+//entrenamos la ia con los valores pasados
 regresionPrueba.train();
+
+//realizamos un test
 const r = regresionPrueba.test(testFeatures, testLabels);
 
+//mostramos valores de B y las  distintas M
 console.log('Valor de B =>', regresionPrueba.weights.get(0,0));
 console.log('Valor de M1 =>', regresionPrueba.weights.get(1,0));
 console.log('Valor de M2 =>', regresionPrueba.weights.get(2,0));
 console.log('Valor de M3 =>', regresionPrueba.weights.get(3,0));
 console.log('R => ', r);
 
+//hacemos una prueba
 console.log('==========================')
 console.log('Prueba');
 console.log('Datos =>' , features[1]);

@@ -7,15 +7,17 @@ function stripQuotes(columnName) {
     return columnName.replace(/^"(.*)"$/, '$1');
 }
 
+//funcion generica para quitar cadenas a string, para ello usamos expresiones regulares
 function extractCharacter(columnName,regular, characterReplace) {
     return columnName.replace(regular, characterReplace);
 }
 
-
+//con este metodo extraemos los valores que nos ha pasado el usuario y los dividimos en input y output
 function extractColumns(data, columnNames){
     const headers = _.first(data);
 
     const indexes = _.map(columnNames, column => headers.indexOf(column) );
+
     const extracted = _.map(data, row => _.pullAt(row, indexes) );
 
     return extracted;
@@ -25,11 +27,17 @@ module.exports = function loadCSV(
     filename, 
     characterSplit,
     {
-        dataColumns     = [],
-        labelColumns    = [],
-        shuffle         = true,
-        splitTest       = 0,
-        converters      = {}
+        dataColumns     = [],   //indicar nombre de las columnas que son los inputs que se usan para predecir
+
+        labelColumns    = [],   //indicar nombre de la columna que es el resultado a predecir
+
+        shuffle         = true, //por si quieres mezclar los valores
+
+        splitTest       = 0,    //desde que valor quieres que sean para test. Si pones 5, en el csv a partir de la fila 6 el resto seran para hacer test
+                                // 10       -> valor minimo para que funcione bien
+                                // false    -> si no quieres valores para test 
+
+        converters      = {}    //añadir conversiones de columnas a valores
     } 
 ) {
     
@@ -42,12 +50,7 @@ module.exports = function loadCSV(
     //esto nos sirve por si se genera el csv con campos al final vacias value,id,,,, -> value,id
     data = data.map(row => _.dropRightWhile(row, val => val === '') );
 
-    console.log("data1: ", data);
-
-    //quitamos de los titulos '"value"', las ""
-    for (let i = 0; i < data[0].length; i++) {
-        data[0][i] = stripQuotes(data[0][i]);
-    }
+    //console.log("divididos por filas y columnas: ", data);
 
     //quitamos los \r de algunas cadenas
     data = data.map( (row, indexRow) => {
@@ -56,8 +59,16 @@ module.exports = function loadCSV(
         })
     })
 
+    //console.log("despues de quitar \\r: ", data);
 
-    console.log("data2: ", data);
+
+    //quitamos de los titulos '"value"', las ""
+    for (let i = 0; i < data[0].length; i++) {
+        data[0][i] = stripQuotes(data[0][i]);
+    }
+
+    //console.log("quitamos \"\" : ", data);
+    
 
     const headers = _.first(data);
 
@@ -80,20 +91,18 @@ module.exports = function loadCSV(
 
     });
 
-    console.log("data3: ", data);
+    //console.log("Despues de pasar a float: ", data);
 
     //separamos en distintos arrays los labels y features
     let labels = extractColumns(data, labelColumns);
     data = extractColumns(data, dataColumns);
 
-    console.log("data4: ", data);
-    console.log("label: ", labels);
+    //console.log("features separadas", data);
+    //console.log("label", labels);
 
     //quitamos el primer elemento de cada array ya que estan los nombres de las columnas y no lo queremos
     labels.shift();
     data.shift();
-
-    
 
     //en caso de indicar de mezclar el array, lo mezclamos
     if( shuffle ){
@@ -101,7 +110,7 @@ module.exports = function loadCSV(
         labels = shuffleSeed.shuffle(labels, 'phrase' );
     }
 
-
+    //en caso de querer hacer test, dividimos las salidas en valores de entrenamiento y test
     if( splitTest ){
         const trainSize = _.isNumber( splitTest ) ? splitTest : Math.floor(data.length / 2);
 
@@ -113,6 +122,7 @@ module.exports = function loadCSV(
         }
 
     }
+    //si no se quiere hacer test solo hay valores de entrenamiento
     else{
         return { features: data, labels };
     }
