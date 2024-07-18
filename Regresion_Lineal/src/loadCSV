@@ -7,6 +7,11 @@ function stripQuotes(columnName) {
     return columnName.replace(/^"(.*)"$/, '$1');
 }
 
+function extractCharacter(columnName,regular, characterReplace) {
+    return columnName.replace(regular, characterReplace);
+}
+
+
 function extractColumns(data, columnNames){
     const headers = _.first(data);
 
@@ -37,10 +42,22 @@ module.exports = function loadCSV(
     //esto nos sirve por si se genera el csv con campos al final vacias value,id,,,, -> value,id
     data = data.map(row => _.dropRightWhile(row, val => val === '') );
 
+    console.log("data1: ", data);
+
     //quitamos de los titulos '"value"', las ""
     for (let i = 0; i < data[0].length; i++) {
         data[0][i] = stripQuotes(data[0][i]);
     }
+
+    //quitamos los \r de algunas cadenas
+    data = data.map( (row, indexRow) => {
+        return row.map( (column, indexColumn) =>{
+            return extractCharacter(column,/\r/g, '');
+        })
+    })
+
+
+    console.log("data2: ", data);
 
     const headers = _.first(data);
 
@@ -63,13 +80,20 @@ module.exports = function loadCSV(
 
     });
 
+    console.log("data3: ", data);
+
     //separamos en distintos arrays los labels y features
     let labels = extractColumns(data, labelColumns);
     data = extractColumns(data, dataColumns);
 
+    console.log("data4: ", data);
+    console.log("label: ", labels);
+
     //quitamos el primer elemento de cada array ya que estan los nombres de las columnas y no lo queremos
     labels.shift();
     data.shift();
+
+    
 
     //en caso de indicar de mezclar el array, lo mezclamos
     if( shuffle ){
