@@ -4,7 +4,7 @@ const _ = require('lodash');            // Loadash
 //Calse encargada de toda la lógia de regresión lineal
 class RegresionLineal{
 
-    //Features = , Labels = , Options = 
+    //Features = Datos , Labels = Resultados, Options = Opciones del algoritmo 
     constructor(features, labels, options){
 
         //Declaramos los valores independientes (features) y los valores dependientes (labels)
@@ -30,27 +30,7 @@ class RegresionLineal{
         }
     }
 
-    //Ajustamos los valores de 'm' y 'b' a su resultado óptimo
-    /*gradientDescent(){
-        //Generamos unas predicciones con los valores actuales de 'b' y 'm'
-        const currentGuess = this.features.map( row => {
-            return this.m * row[0] + this.b;
-        });
-
-        //Calculamos los slope de 'b' y 'm' respectivamente
-        const bSlope = _.sum(currentGuess.map((guess, i) => {
-            return guess - this.labels[i][0];
-        })) * 2 / this.labels.length;
-
-        const mSlope = _.sum(currentGuess.map((guess, i) => {
-            return -1*this.features[i][0] * (this.labels[i][0] - guess)
-        })) * 2 / this.labels.length;
-
-        //Actualizamos los valores de 'b' y 'm'
-        this.m = this.m - mSlope * this.options.learningRate;
-        this.b = this.b - bSlope * this.options.learningRate;
-    }*/
-
+    //Aplicamos el gradiente descendiente
     gradientDescent(){
         //Esta funcion es para multiplicacion entre matrices
         const currentGuess = this.features.matMul(this.weights);
@@ -66,6 +46,7 @@ class RegresionLineal{
         this.weights = this.weights.sub(slopes.mul(this.options.learningRate));
     }
 
+    //Probamos nuestro algoritmo para ver su eficacia
     test(testFeatures, testLabels){
         //Convertimos los parámtros en tensores
         testFeatures = this.processFeatures(testFeatures);
@@ -74,47 +55,56 @@ class RegresionLineal{
         //Generamos las predicciones para nuestro algoritmo entrenado
         const preditions = testFeatures.matMul(this.weights);
 
+        //Diferencia entre el resultado real y nuestras predicciones
         const res = testLabels.sub(preditions)
             .pow(2)
             .sum()
             .get();
 
+        //Diferencia entre el resultado real y la media de dichos datos
         const tot = testLabels.sub(testLabels.mean())
             .pow(2)
             .sum()
             .get();
 
+        //Para que el algoritmo sea funcional su resultado tiene que estar los mas cercano a 1 posible
+        //Si el resultado del test de un número negativo significa que el algoritmo funciona tan mal que sería mejor hacer una media directamente
         return 1 - res / tot;
     }
 
+    //Procesamos los datos de las features
     processFeatures(features){
         //Convertimos features en un tensor
         features = tf.tensor(features);
-
-        features.print();
         
+        //Normalizamos los valores del tensor
         if(this.mean && this.variance){
             features = features.sub(this.mean).div(this.variance.pow(0.5));
         } else{
             features = this.standardize(features);
         }
 
-        //Concatena a nuestras featuers una columna de todo 1
+        //Concatena a nuestras features una columna de todo 1
         features = tf.ones([features.shape[0], 1]).concat(features, 1);
 
         return features;
     }
 
+    //Normalizamos
     standardize(features){
+        //Obtenemos la media y la diferencia de nuestro tensor de features(datos)
         const { mean, variance } = tf.moments(features,0);
 
         this.mean = mean;
         this.variance = variance;
 
+        //Normalizamos el tensor y los devolvemos
         return features.sub(mean).div(variance.pow(0.5));
     }
 
+    //Guardamos el minimum square error
     recordMSE(){
+        //Calculamos el minimum square error
         const mse = this.features
             .matMul(this.weights)
             .sub(this.labels)
@@ -123,14 +113,18 @@ class RegresionLineal{
             .div(this.features.shape[0])
             .get();
 
+        //Guardamos el resultado en la primera posicion del array
         this.mseHistory.unshift(mse);
     }
 
+    //Actualizamos el learning rate
     updateLearningRate(){
         if(this.mseHistory.length < 2){
             return;
         }
 
+        // Si el minimum square error aumenta dividimos el learning rate por 2
+        // sino, enotnces multiplicamos el learning rate por 0.05
         if(this.mseHistory[0] > this.mseHistory[1]){
             this.options.learningRate /= 2;
         } else {
@@ -138,25 +132,26 @@ class RegresionLineal{
         }
     }
 
+    //Predeccimos un resultado en concreto
     predictResult(features){
         features = tf.tensor(features);
-
-        features.print();
-
         features = tf.reshape(features, [1, features.shape[0]]);
-
-        features.print();
-
         features = features.sub(this.mean).div(this.variance.pow(0.5));
-
-        features.print();
-
         features = tf.ones([features.shape[0], 1]).concat(features, 1);
-
-        features.print();
 
         const preditions = features.matMul(this.weights);
         return preditions.sum().get();
+    }
+
+    //Mostramos el valor de b y m que hemos calculado
+    mostrarPesos(){
+        console.log('==========================')
+        console.log('Mostrar Pesos')
+        for(let i = 0; i < this.weights.shape[0]; i++){
+            if(i == 0) console.log('Valor de B =>', this.weights.get(0,0));
+            else console.log(`Valor de M${i} =>`, this.weights.get(i,0));
+        }
+        console.log('==========================')
     }
 }
 

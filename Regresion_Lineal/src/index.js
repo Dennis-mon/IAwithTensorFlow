@@ -5,7 +5,7 @@ const RegresionLineal = require('./regresion_lineal'); // Cargamos la clase enca
 
 const pathCSV = './src/csv/';
 
-//cargamos csv
+//cargamos csv 
 const { features , labels, testFeatures, testLabels } = loadCSV(
     `${pathCSV}datos-marzo-horas.csv`,
     ',',
@@ -32,19 +32,17 @@ const regresionPrueba = new RegresionLineal(
 regresionPrueba.train();
 
 //realizamos un test
+console.log('==========================');
 const r = regresionPrueba.test(testFeatures, testLabels);
-
-//mostramos valores de B y las  distintas M
-console.log('Valor de B =>', regresionPrueba.weights.get(0,0));
-console.log('Valor de M1 =>', regresionPrueba.weights.get(1,0));
-console.log('Valor de M2 =>', regresionPrueba.weights.get(2,0));
-console.log('Valor de M3 =>', regresionPrueba.weights.get(3,0));
+console.log('Eficacia del algoritmo');
 console.log('R => ', r);
 
+//mostramos valores de B y las  distintas M
+regresionPrueba.mostrarPesos();
+
 //hacemos una prueba
-console.log('==========================')
 console.log('Prueba');
 console.log('Datos =>' , features[1]);
-console.log('Resultado =>' , labels[1]);
+console.log('Resultado Real =>' , labels[1]);
 const resultado = regresionPrueba.predictResult(features[1]);
-console.log(resultado);
+console.log('Resultado Predicción =>' ,resultado);
