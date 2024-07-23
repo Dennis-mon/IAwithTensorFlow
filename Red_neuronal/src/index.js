@@ -10,37 +10,69 @@ const { features , labels, testFeatures, testLabels } = loadCSV(
     ',',
     {
         shuffle: true,
-        splitTest: 9,
+        splitTest: 20,
         dataColumns: ['dia', 'mes', '0-24'],
         labelColumns: ['value']
     }
 )
 
-/*
+
 function Model( model, activation, error ){
     this.model = model;
     this.activation = activation;
     this.error = error;
 }
 
-let model1 = new Model("modelo1", "relu", 0.2);
-let model2 = new Model("modelo2", "sigmoid", 0.1);
-let model3 = new Model("modelo3", "tanh", 100);
-
 let models = [];
-models.push(model1);
-models.push(model2);
-models.push(model3);
 
 // Ordenar el array por el valor de error en orden ascendente
-models.sort(function(a, b) {
+/*models.sort(function(a, b) {
     return a.error - b.error;
 });
 
 console.log(models);
-
 */
 
+//=======================================
+//Creamos una red para cada tipo de activacion
+const activations = ['linear','sigmoid', 'tanh', 'relu'];
+
+async function crearRedes2(){
+
+    //creo red para cada activacion
+    for (const typeActivation of activations) {
+
+        const redneuronal = new RedNeuronal(
+            features,
+            labels,  
+            {
+                learningRate: 0.1,
+                epochs: 2000,
+                neurons: 32,
+                activation: typeActivation
+            }
+        );
+
+        redneuronal.compilar();
+        const history = await redneuronal.entrenar();
+
+        models.push( new Model( redneuronal, typeActivation, history.history.loss[ history.history.loss.length - 1 ] ) ) 
+    }
+
+    //las ordeno segun su valor de error
+    models.sort(function(a, b) {
+        return a.error - b.error;
+    });
+
+    console.log(models);
+
+}
+
+crearRedes2()
+
+
+/*=======================================
+PARA CREAR REDES NEURONALES UNA A UNA
 
 //Creamos una nueva instancia de la clase Res Neuronal
 const redneuronalPrueba = new RedNeuronal(
@@ -73,3 +105,5 @@ async function crearRedes(){
 }
 
 crearRedes();
+
+=======================================*/

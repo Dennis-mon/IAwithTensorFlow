@@ -47,7 +47,7 @@ class RedNeuronal{
     //Método que se encarga de entrenar el algoritmo con los features y labels que se le pasan en el contructor
     async entrenar(){
         console.log('Entrenando');
-        await this.model.fit(this.features, this.labels, { epochs: this.options.epochs });
+        return await this.model.fit(this.features, this.labels, { epochs: this.options.epochs, verbose: 0 });
     };
 
     //Método que predice y devuelvo unos resultados a partir de los datos de entrada que se le propocionen(features)
