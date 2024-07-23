@@ -15,6 +15,7 @@ const { features , labels, testFeatures, testLabels } = loadCSV(
         labelColumns: ['value']
     }
 )
+
 /*
 function Model( model, activation, error ){
     this.model = model;
@@ -34,28 +35,33 @@ models.push(model3);
 // Ordenar el array por el valor de error en orden ascendente
 models.sort(function(a, b) {
     return a.error - b.error;
-});*/
-
-
+});
 
 console.log(models);
+
+*/
+
 const redneuronalPrueba = new RedNeuronal(
     features, 
     labels,
     {
         learningRate: 0.1,
         epochs: 2000,
-        neurons: 60,
+        neurons: 32,
     }
 );
 
-redneuronalPrueba.compilar();
-redneuronalPrueba.entrenar();
-const resultado = redneuronalPrueba.prediccion(labels);
+async function crearRedes(){
 
-console.log("Resultados obtenidos:");
-resultado.print();
-console.log("Resultados reales:");
-console.log(labels);
+    redneuronalPrueba.compilar();
+    await redneuronalPrueba.entrenar();
+    const resultado = redneuronalPrueba.prediccion(features);
+    
+    console.log("Resultados obtenidos:");
+    resultado.print();
+    console.log("Resultados reales:");
+    console.log(labels);
+}
 
 
+crearRedes();
