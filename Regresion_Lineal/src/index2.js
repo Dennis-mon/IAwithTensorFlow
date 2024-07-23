@@ -1,6 +1,6 @@
 require('@tensorflow/tfjs-node');
 const tf = require('@tensorflow/tfjs');
-const loadCSV = require('./loadCSV');
+const loadCSV = require('../../loadCSV');
 const pathCSV = './src/csv/';
 
 
@@ -10,7 +10,7 @@ const { features , labels, testFeatures, testLabels } = loadCSV(
     {
         shuffle: true,
         splitTest: 22,
-        dataColumns: ['dia'],
+        dataColumns: ['dia','0-24'],
         labelColumns: ['value']
     }
 )
@@ -21,7 +21,9 @@ console.log("labels:", labels)
 let x_vals = tf.tensor(features);
 let y_vals = tf.tensor(labels);
 
-let w = tf.variable(tf.scalar(0));
+let w = tf.variable( tf.zeros( [x_vals.shape[1], 1]) );
+console.log("valores de w");
+w.print()
 let b = tf.variable(tf.scalar(0));
 
 let learningRate = 0.002;
@@ -59,7 +61,7 @@ function train(x,y,w,b,i){
     });
 }
 
-for( let i = 0; i < 1000; i++ ){
+for( let i = 0; i < 10; i++ ){
     train(x_vals, y_vals, w, b,i);
 }
 
