@@ -1,9 +1,9 @@
 require('@tensorflow/tfjs-node');
 const tf = require('@tensorflow/tfjs');
-const loadCSV = require('./loadCSV');
+const loadCSV = require('./loadCSV.js');
 const RegresionLineal = require('./regresion_lineal'); // Cargamos la clase encargada de realizar la regresión lineal
 
-const pathCSV = './src/csv/';
+const pathCSV = '../csv/';
 
 //cargamos csv 
 const { features , labels, testFeatures, testLabels } = loadCSV(
