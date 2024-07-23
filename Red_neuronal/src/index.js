@@ -16,63 +16,24 @@ const { features , labels, testFeatures, testLabels } = loadCSV(
     }
 )
 
-//let xs = [ [0,0],[0,1],[1,0],[1,1] ];
-//let ys = [ [0], [1], [1], [1] ];
-
-
-
-let inputs = tf.tensor(features);
-let outputs = tf.tensor(labels);
-
-console.log("inputs:")
-inputs.print()
-console.log("outputs")
-outputs.print()
-
-
-console.log( inputs.shape[0] )
-
-async function createModel(){
-    const model = tf.sequential();
-
-    const hiddenLayer = tf.layers.dense({
-        units: 10,
-        inputShape: [ inputs.shape[1] ],
-        activation: 'tanh'
-    });
-
-    model.add(hiddenLayer);
-
-    const outputLayer = tf.layers.dense({
-        units: 1,
-        inputShape: [10],
-    });
-
-    model.add(outputLayer);
-
-    model.compile({
-        optimizer: tf.train.adam(0.5),
-        loss: 'meanSquaredError'
-    });
-
-    const configTrain = {
-        epochs: 5000,
-    }
-
-    const h = await model.fit(inputs, outputs, configTrain);
-
-    console.log(h.history.loss[ h.history.loss.length - 1 ]);
-
-    let prediccion = model.predict( inputs );
-
-
-    console.log("Resultados obtenidos:");
-    prediccion.print();
-    console.log("Resultados reales:");
-    outputs.print();
-
-
-
+function Model( model, activation, error ){
+    this.model = model;
+    this.activation = activation;
+    this.error = error;
 }
 
-createModel();
+let model1 = new Model("modelo1", "relu", 0.2);
+let model2 = new Model("modelo2", "sigmoid", 0.1);
+let model3 = new Model("modelo3", "tanh", 100);
+
+let models = [];
+models.push(model1);
+models.push(model2);
+models.push(model3);
+
+// Ordenar el array por el valor de error en orden ascendente
+models.sort(function(a, b) {
+    return a.error - b.error;
+});
+
+console.log(models);
