@@ -56,7 +56,31 @@ class RedNeuronal{
     prediccion(features){
         features = tf.tensor(features)
         return this.model.predict( features );
-    }
+    };
+
+    //Método para ver la eficacia del algoritmo entrenado
+    testeo(testFeatures, testLabels){
+        testFeatures = tf.tensor(testFeatures);
+        testLabels   = tf.tensor(testLabels);
+
+        const resultado = this.model.predict( testFeatures );
+
+        //Diferencia entre el resultado real y nuestras predicciones
+        const res = testLabels.sub(resultado)
+            .pow(2)
+            .sum()
+            .get();
+    
+        //Diferencia entre el resultado real y la media de dichos datos
+        const tot = testLabels.sub(testLabels.mean())
+            .pow(2)
+            .sum()
+            .get();
+    
+        //Para que el algoritmo sea funcional su resultado tiene que estar los mas cercano a 1 posible
+        //Si el resultado del test de un número negativo significa que el algoritmo funciona tan mal que sería mejor hacer una media directamente
+        return 1 - res / tot;
+    };
 }
 
 //Exoprtamos la clase para poder usarla desde fuera

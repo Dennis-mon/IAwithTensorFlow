@@ -49,7 +49,7 @@ class RegresionLineal{
     //Probamos nuestro algoritmo para ver su eficacia
     test(testFeatures, testLabels){
         //Convertimos los parámtros en tensores
-        testFeatures = this.processFeatures(testFeatures);
+        testFeatures = this.processFeatures(testFeatures); 
         testLabels = tf.tensor(testLabels);
 
         //Generamos las predicciones para nuestro algoritmo entrenado

@@ -16,10 +16,11 @@ const { features , labels, testFeatures, testLabels } = loadCSV(
     }
 )
 
-function Model( model, activation, error ){
+function Model( model, activation, error , resultado){
     this.model = model;
     this.activation = activation;
     this.error = error;
+    this.resultado = resultado;
 }
 
 let models = [];
@@ -46,13 +47,14 @@ async function crearRedes2(){
 
         redneuronal.compilar();
         const history = await redneuronal.entrenar();
+        const porcentaje = redneuronal.testeo(testFeatures, testLabels);
 
-        models.push( new Model( redneuronal, typeActivation, history.history.loss[ history.history.loss.length - 1 ] ) ) 
+        models.push( new Model( redneuronal, typeActivation, history.history.loss[ history.history.loss.length - 1 ] , porcentaje) ) 
     }
 
-    // Ordenar el array por el valor de error en orden ascendente
+    // Ordenar el array por el valor de porcentaje en orden descendente
     models.sort(function(a, b) {
-        return a.error - b.error;
+        return b.resultado - a.resultado;
     });
 
     console.log(models);
