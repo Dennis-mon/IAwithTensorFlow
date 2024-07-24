@@ -10,12 +10,11 @@ const { features , labels, testFeatures, testLabels } = loadCSV(
     ',',
     {
         shuffle: true,
-        splitTest: 20,
+        splitTest: 10,
         dataColumns: ['dia', 'mes', '0-24'],
         labelColumns: ['value']
     }
 )
-
 
 function Model( model, activation, error ){
     this.model = model;
@@ -24,14 +23,6 @@ function Model( model, activation, error ){
 }
 
 let models = [];
-
-// Ordenar el array por el valor de error en orden ascendente
-/*models.sort(function(a, b) {
-    return a.error - b.error;
-});
-
-console.log(models);
-*/
 
 //=======================================
 //Creamos una red para cada tipo de activacion
@@ -48,7 +39,7 @@ async function crearRedes2(){
             {
                 learningRate: 0.1,
                 epochs: 2000,
-                neurons: 32,
+                neurons: 10,
                 activation: typeActivation
             }
         );
@@ -59,7 +50,7 @@ async function crearRedes2(){
         models.push( new Model( redneuronal, typeActivation, history.history.loss[ history.history.loss.length - 1 ] ) ) 
     }
 
-    //las ordeno segun su valor de error
+    // Ordenar el array por el valor de error en orden ascendente
     models.sort(function(a, b) {
         return a.error - b.error;
     });
@@ -86,7 +77,8 @@ const redneuronalPrueba = new RedNeuronal(
     {
         learningRate: 0.1,
         epochs: 2000,
-        neurons: 32,
+        neurons: 10,
+        activation: 'relu'
     }
 );
 
@@ -105,5 +97,4 @@ async function crearRedes(){
 }
 
 crearRedes();
-
 =======================================*/

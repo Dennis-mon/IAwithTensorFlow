@@ -37,9 +37,11 @@ class RedNeuronal{
         this.model.add(outputLayer);
     
         //Compilamos nuestro modelo con los parámetros de optimización y de pérdida de error
+        //Tipo de optimizadores => 'adam' - 'adagrad' - 'adamax' - 'rmsprop'
+        //Tipo de pérdida       => 'huberLoss' - 'absoluteDifference' - 'meanSquareError'
         this.model.compile({
             optimizer: tf.train.adam(this.options.learningRate),
-            loss: 'meanSquaredError'
+            loss: tf.losses.absoluteDifference
         });
     
     };
