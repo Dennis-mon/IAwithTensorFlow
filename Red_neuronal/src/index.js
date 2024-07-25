@@ -2,6 +2,7 @@ require('@tensorflow/tfjs-node');
 const tf = require('@tensorflow/tfjs');
 const loadCSV = require('./loadCSV.js');
 const RedNeuronal = require('./red_neuronal.js'); // Cargamos la clase encargada de realizar la regresión lineal
+const { forEach } = require('lodash');
 const pathCSV = '../csv/';
 
 //Cargamos CSV 
@@ -57,7 +58,24 @@ async function crearRedes2(){
         return b.resultado - a.resultado;
     });
 
-    console.log(models);
+    
+    models.forEach(model => {
+        console.log("============");
+        console.log("activacion:", model.activation);
+        console.log("error:", model.error);
+        console.log("resultado:", model.resultado);
+    });
+
+    console.log("==========Predicciones==========")
+
+    models.forEach(element => {
+        const resultado = element.model.prediccion(features);
+        console.log("Resultado real:", labels);
+        console.log("resultado prediccion:");
+        resultado.print();
+
+    });
+
 
 }
 
