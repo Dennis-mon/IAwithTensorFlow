@@ -2,6 +2,7 @@ require('@tensorflow/tfjs-node');
 const tf = require('@tensorflow/tfjs');
 const loadCSVPercentage = require('./loadCSVPercentage.js');
 const RedNeuronal = require('./red_neuronal.js'); // Cargamos la clase encargada de realizar la regresión lineal
+const plot = require('node-remote-plot'); // Pacakage para generar gráficos
 const { forEach } = require('lodash');
 const pathCSV = '../csv/';
 
@@ -11,7 +12,7 @@ const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     ',',
     {
         shuffle: true,
-        percentageTest: -1,
+        percentageTest: 80,
         dataColumns: ['mes', 'dia', '0-24'],
         labelColumns: ['value']
     }
@@ -96,8 +97,8 @@ const redneuronalPrueba = new RedNeuronal(
     //neurons      = nº de neuronas que queramos que tenga el algoritmo // por defecto 10
     //activation   = función de activación que vamos a usar para el algoritmo, se recomienda ('relu' , 'tanh', 'sigmoid', 'lineal') // por defecto 'relu'
     {
-        learningRate: 0.1,
-        epochs: 2000,
+        learningRate: 0.001,
+        epochs: 1500,
         neurons: 10,
         activation: 'relu'
     }
@@ -107,7 +108,7 @@ const redneuronalPrueba = new RedNeuronal(
 async function crearRedes(){
 
     redneuronalPrueba.compilar();
-    await redneuronalPrueba.entrenar(); //await para impedir que el código se siga ejecutando hasta que el algoritmo este 100% entrenado
+    const historial = await redneuronalPrueba.entrenar(); //await para impedir que el código se siga ejecutando hasta que el algoritmo este 100% entrenado
 
     //Guardamos los resultados de la predicción en una variable auxilar para poder verlos en la terminal
     const resultado = redneuronalPrueba.prediccion(features);
@@ -115,6 +116,15 @@ async function crearRedes(){
     resultado.print();
     console.log("Resultados reales:");
     console.log(labels);
+    console.log('Testeo');
+    console.log(redneuronalPrueba.testeo(testFeatures, testLabels));
+
+    //Ploteamos 
+    plot({   
+        x: historial.history.loss,
+        xLabel: 'Iteration #',
+        yLabel: 'Mean Square Error'
+    });
 }
 
 crearRedes();

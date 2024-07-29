@@ -32,6 +32,7 @@ class RedNeuronal{
         const outputLayer = tf.layers.dense({
             units: 1,
             inputShape: [this.options.neurons],
+            activation: 'linear'
         });
     
         this.model.add(outputLayer);
@@ -41,7 +42,7 @@ class RedNeuronal{
         //Tipo de pérdida       => 'huberLoss' - 'absoluteDifference' - 'meanSquareError'
         this.model.compile({
             optimizer: tf.train.adam(this.options.learningRate),
-            loss: tf.losses.absoluteDifference
+            loss: tf.losses.meanSquaredError
         });
     
     };
@@ -49,7 +50,7 @@ class RedNeuronal{
     //Método que se encarga de entrenar el algoritmo con los features y labels que se le pasan en el contructor
     async entrenar(){
         console.log('Entrenando');
-        return await this.model.fit(this.features, this.labels, { epochs: this.options.epochs, verbose: 0 });
+        return await this.model.fit(this.features, this.labels, { epochs: this.options.epochs });
     };
 
     //Método que predice y devuelvo unos resultados a partir de los datos de entrada que se le propocionen(features)

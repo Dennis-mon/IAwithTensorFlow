@@ -107,9 +107,9 @@ module.exports = function loadCSVPercentage(
         if( percentageTest > 99 ) throw new Error("No puedes usar todos los valores para test. percentageTest debe ser menor que 100%");
         else if (percentageTest < 0) percentageTest = 0;
 
-        console.log( "totalRows", totalRows  );
+        //console.log( "totalRows", totalRows  );
         const trainSize = Math.floor( totalRows * (  ( 100 - percentageTest)/100));
-        console.log("trainsize", trainSize);
+        //console.log("trainsize", trainSize);
 
         return {
             features:       data.slice(0,trainSize),
