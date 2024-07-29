@@ -23,7 +23,7 @@ function extractColumns(data, columnNames){
     return extracted;
 }
 
-module.exports = function loadCSV(
+module.exports = function loadCSVPercentage(
     filename, 
     characterSplit,
     {
@@ -33,7 +33,7 @@ module.exports = function loadCSV(
 
         shuffle         = true, //por si quieres mezclar los valores
 
-        splitTest       = 0,    //desde que valor quieres que sean para test. Si pones 5, en el csv a partir de la fila 6 el resto seran para hacer test
+        percentageTest  = 0,    //indicar porcentaje de test que quieres
                                 // 10       -> valor minimo para que funcione bien
                                 // false    -> si no quieres valores para test 
 
@@ -50,8 +50,6 @@ module.exports = function loadCSV(
     //esto nos sirve por si se genera el csv con campos al final vacias value,id,,,, -> value,id
     data = data.map(row => _.dropRightWhile(row, val => val === '') );
 
-    //console.log("divididos por filas y columnas: ", data);
-
     //quitamos los \r de algunas cadenas
     data = data.map( (row, indexRow) => {
         return row.map( (column, indexColumn) =>{
@@ -59,15 +57,13 @@ module.exports = function loadCSV(
         })
     })
 
-    //console.log("despues de quitar \\r: ", data);
-
+    //contamos todas las filas restando 1 (la fila de los titulos)
+    let totalRows = data.length - 1;
 
     //quitamos de los titulos '"value"', las ""
     for (let i = 0; i < data[0].length; i++) {
         data[0][i] = stripQuotes(data[0][i]);
     }
-
-    //console.log("quitamos \"\" : ", data);
     
 
     const headers = _.first(data);
@@ -91,14 +87,9 @@ module.exports = function loadCSV(
 
     });
 
-    //console.log("Despues de pasar a float: ", data);
-
     //separamos en distintos arrays los labels y features
     let labels = extractColumns(data, labelColumns);
     data = extractColumns(data, dataColumns);
-
-    //console.log("features separadas", data);
-    //console.log("label", labels);
 
     //quitamos el primer elemento de cada array ya que estan los nombres de las columnas y no lo queremos
     labels.shift();
@@ -111,8 +102,16 @@ module.exports = function loadCSV(
     }
 
     //en caso de querer hacer test, dividimos las salidas en valores de entrenamiento y test
-    if( splitTest ){
-        const trainSize = _.isNumber( splitTest ) ? splitTest : Math.floor(data.length / 2);
+    if( percentageTest && _.isNumber(percentageTest) ){
+
+        if( percentageTest > 99 ) throw new Error("No puedes usar todos los valores para test. percentageTest debe ser menor que 100%");
+        else if (percentageTest < 0) percentageTest = 0;
+
+        console.log( "totalRows", totalRows  );
+        const trainSize = Math.floor( totalRows * (  ( 100 - percentageTest)/100));
+        console.log("trainsize", trainSize);
+
+        console.log(data);
 
         return {
             features:       data.slice(0,trainSize),
@@ -122,6 +121,7 @@ module.exports = function loadCSV(
         }
 
     }
+
     //si no se quiere hacer test solo hay valores de entrenamiento
     else{
         return { features: data, labels };

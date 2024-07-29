@@ -1,21 +1,23 @@
 require('@tensorflow/tfjs-node');
 const tf = require('@tensorflow/tfjs');
-const loadCSV = require('./loadCSV.js');
+const loadCSVPercentage = require('./loadCSVPercentage.js');
 const RedNeuronal = require('./red_neuronal.js'); // Cargamos la clase encargada de realizar la regresión lineal
 const { forEach } = require('lodash');
 const pathCSV = '../csv/';
 
 //Cargamos CSV 
-const { features , labels, testFeatures, testLabels } = loadCSV(
+const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     `${pathCSV}datos-marzo-horas.csv`,
     ',',
     {
         shuffle: true,
-        splitTest: 10,
-        dataColumns: ['dia', 'mes', '0-24'],
+        percentageTest: -1,
+        dataColumns: ['mes', 'dia', '0-24'],
         labelColumns: ['value']
     }
 )
+
+/* CREAR REDES CON MUCHAS ACTIVACIONES
 
 function Model( model, activation, error , resultado){
     this.model = model;
@@ -80,10 +82,9 @@ async function crearRedes2(){
 }
 
 crearRedes2()
+*/
 
-
-/*=======================================
-PARA CREAR REDES NEURONALES UNA A UNA
+//PARA CREAR REDES NEURONALES UNA A UNA
 
 //Creamos una nueva instancia de la clase Res Neuronal
 const redneuronalPrueba = new RedNeuronal(
@@ -117,4 +118,5 @@ async function crearRedes(){
 }
 
 crearRedes();
-=======================================*/
+
+//=======================================
