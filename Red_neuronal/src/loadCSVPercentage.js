@@ -111,8 +111,6 @@ module.exports = function loadCSVPercentage(
         const trainSize = Math.floor( totalRows * (  ( 100 - percentageTest)/100));
         console.log("trainsize", trainSize);
 
-        console.log(data);
-
         return {
             features:       data.slice(0,trainSize),
             labels:         labels.slice(0,trainSize),
