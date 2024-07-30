@@ -43,7 +43,7 @@ class RedNeuronal{
         this.model.compile({
             optimizer: tf.train.adam(this.options.learningRate),
             loss: tf.losses.meanSquaredError,
-            metrics: ['accuracy']
+            metrics: ['mape']
         });
     
     };

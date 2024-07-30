@@ -97,9 +97,9 @@ const redneuronalPrueba = new RedNeuronal(
     //neurons      = nº de neuronas que queramos que tenga el algoritmo // por defecto 10
     //activation   = función de activación que vamos a usar para el algoritmo, se recomienda ('relu' , 'tanh', 'sigmoid', 'lineal') // por defecto 'relu'
     {
-        learningRate: 0.001,
-        epochs: 50,
-        neurons: 10,
+        learningRate: 0.01,
+        epochs: 250,
+        neurons: 32,
         activation: 'relu',
         percentage_train: 80,
         batchsize: 50
@@ -113,30 +113,23 @@ async function crearRedes(){
     const historial = await redneuronalPrueba.entrenar(); //await para impedir que el código se siga ejecutando hasta que el algoritmo este 100% entrenado
 
     //Guardamos los resultados de la predicción en una variable auxilar para poder verlos en la terminal
-    const resultado = redneuronalPrueba.prediccion(features);
-    console.log("Resultados obtenidos:");
+    /*const resultado = redneuronalPrueba.prediccion(testFeatures);
+    console.log("Resultados obtenidos:");  
     resultado.print();
     console.log("Resultados reales:");
-    console.log(labels);
-    //console.log('Testeo');
-    //console.log(redneuronalPrueba.testeo(testFeatures, testLabels));
+    console.log(testLabels);
+    console.log('Testeo');
+    console.log(redneuronalPrueba.testeo(testFeatures, testLabels));*/
 
     //Ploteamos 
     plot({   
-        x: historial.history.loss,
+        x: historial.history.val_mape,
         xLabel: 'Iteration #',
-        yLabel: 'Mean Square Error',
-        title: 'MSE',
-        name: 'MSE'
+        yLabel: 'Mean Average Percentage Error',
+        title: 'MAPE',
+        name: 'MAPE'
     });
 
-    /*plot({
-        x: historial.history.acc,
-        xLabel: 'Iteration #',
-        yLabel: 'Accuracy',
-        title: 'Accuracy',
-        name: 'Accuracy'
-    });*/
 }
 
 crearRedes();
