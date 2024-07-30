@@ -17,7 +17,7 @@ const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     }
 )
 
-/* CREAR REDES CON MUCHAS ACTIVACIONES
+//CREAR REDES CON MUCHAS ACTIVACIONES
 
 function Model( model, activation, error , resultado){
     this.model = model;
@@ -82,7 +82,7 @@ async function crearRedes2(){
 }
 
 crearRedes2()
-*/
+
 
 //PARA CREAR REDES NEURONALES UNA A UNA
 
@@ -127,20 +127,3 @@ const redneuronalPrueba = new RedNeuronal2(
     }
 );
 
-//Función asincrona que se encarga de compilar y entrenar el algorimto ademas de generar una prediccón para unos valores independientes de entrada(features)
-async function crearRedes(){
-
-    redneuronalPrueba.compilar();
-    await redneuronalPrueba.entrenar(); //await para impedir que el código se siga ejecutando hasta que el algoritmo este 100% entrenado
-
-    //Guardamos los resultados de la predicción en una variable auxilar para poder verlos en la terminal
-    const resultado = redneuronalPrueba.prediccion(features);
-    console.log("Resultados obtenidos:");
-    resultado.print();
-    console.log("Resultados reales:");
-    console.log(labels);
-}
-
-crearRedes();
-
-//=======================================
