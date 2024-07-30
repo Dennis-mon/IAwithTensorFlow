@@ -8,12 +8,12 @@ const pathCSV = '../csv/';
 
 //Cargamos CSV 
 const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
-    `${pathCSV}datos-marzo-horas.csv`,
+    `${pathCSV}energia-enero-7dias.csv`,
     ',',
     {
         shuffle: true,
-        percentageTest: 80,
-        dataColumns: ['mes', 'dia', '0-24'],
+        percentageTest: 0,
+        dataColumns: [ 'dia de la semana', '0-24'],
         labelColumns: ['value']
     }
 )
@@ -31,9 +31,11 @@ const redneuronalPrueba = new RedNeuronal(
     //activation   = función de activación que vamos a usar para el algoritmo, se recomienda ('relu' , 'tanh', 'sigmoid', 'lineal') // por defecto 'relu'
     {
         learningRate: 0.001,
-        epochs: 1500,
+        epochs: 50,
         neurons: 10,
-        activation: 'relu'
+        activation: 'relu',
+        percentage_train: 80,
+        batchsize: 50
     }
 );
 
@@ -49,15 +51,25 @@ async function crearRedes(){
     resultado.print();
     console.log("Resultados reales:");
     console.log(labels);
-    console.log('Testeo');
-    console.log(redneuronalPrueba.testeo(testFeatures, testLabels));
+    //console.log('Testeo');
+    //console.log(redneuronalPrueba.testeo(testFeatures, testLabels));
 
     //Ploteamos 
     plot({   
         x: historial.history.loss,
         xLabel: 'Iteration #',
-        yLabel: 'Mean Square Error'
+        yLabel: 'Mean Square Error',
+        title: 'MSE',
+        name: 'MSE'
     });
+
+    /*plot({
+        x: historial.history.acc,
+        xLabel: 'Iteration #',
+        yLabel: 'Accuracy',
+        title: 'Accuracy',
+        name: 'Accuracy'
+    });*/
 }
 
 crearRedes();
