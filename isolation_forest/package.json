@@ -1,0 +1,17 @@
+{
+  "name": "isolation_forest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "isolation-forest": "^0.0.9",
+    "lodash": "^4.17.21",
+    "shuffle-seed": "^1.1.6"
+  }
+}
