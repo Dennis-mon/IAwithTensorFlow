@@ -4,6 +4,7 @@ const loadCSVPercentage = require('./loadCSVPercentage')
 const { createCanvas } = require('canvas');
 const {Chart, registerables} = require('chart.js');
 const fs = require('fs');
+const { values } = require('lodash');
 
 // Registrar todos los componentes necesarios
 Chart.register(...registerables);
@@ -17,12 +18,13 @@ const green = "\x1b[32m";
 
 //Cargamos CSV 
 const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
-    `${pathCSV}energia-enero-7dias.csv`,
+    `${pathCSV}prueba.csv`,
     ',',
     {
         shuffle: false,
         percentageTest: 20,
-        dataColumns: ['dia de la semana', '0-24','value']
+        dataColumns: ['dia de la semana', '0-24','value'],
+        labelColumns: ['año','mes','dia','hora','minuto']
     }
 )
 
@@ -42,8 +44,12 @@ var normal = [];
 
 //filtramos los anomalyScore mayores a 0.5
 scores.forEach( (element, index) =>{
-    if(element > 0.5) anomalies.push( {"anomalyScore":element, "index": index} );
-    else normal.push( {"anomalyScore":element, "index": index} );
+    if(element > 0.5) anomalies.push( 
+        {"valor":features[index][2], 
+        "date": new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4] ).toISOString().split('T')[0] } );
+    else normal.push( 
+        {"valor":features[index][2], 
+        "date": new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4] ).toISOString().split('T')[0] } );
 })
 
 //ordenamos de mayor a menos valor de anomalia
@@ -57,12 +63,14 @@ scores.forEach( (element, index) =>{
 var dataNormal = [];
 var dataAnomalies = [];
 
+var fechas = [];
+
 anomalies.forEach( element => {
-    dataAnomalies.push( {x: element.index, y: element.anomalyScore } )
+    dataAnomalies.push( {x: element.date, y: element.valor } )
 });
 
 normal.forEach( element => {
-    dataNormal.push( {x: element.index, y: element.anomalyScore } )
+    dataNormal.push( {x: element.date, y: element.valor } )
 });
 
 /////////////////////////
@@ -90,6 +98,17 @@ const chart = new Chart(ctx, {
                 borderWidth: 1
             },    
         ]
+    },
+    options: {
+        scales: {
+            y: {
+                type: 'time',
+                time: {
+                    unit: 'day', // Otras unidades: 'month', 'year', etc.
+                    tooltipFormat: 'll'
+                }
+            }
+        }
     }
 });
 
