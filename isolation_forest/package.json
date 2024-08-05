@@ -10,6 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "canvas": "^2.11.2",
+    "chart.js": "^4.4.3",
+    "fs": "^0.0.1-security",
     "isolation-forest": "^0.0.9",
     "lodash": "^4.17.21",
     "shuffle-seed": "^1.1.6"
