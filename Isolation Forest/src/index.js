@@ -1,4 +1,5 @@
 const IsolationForest = require('ml-isolation-forest');
+const xl = require('excel4node');
 
 let X = [
   [200, 50],
@@ -26,4 +27,25 @@ let result = anomalyDetector.predict([
 ]);
 
 console.log(result);
-// 0.8138034871711983,0.36863229603385717,0.30237588018462913,0.3277350851756707
+
+//Creamos el Excel
+var wb = new xl.Workbook();
+
+//Ponemos la fecha
+let date = new Date();
+let fechaDia    = date.getUTCDate();
+let fechaMes    = (date.getUTCMonth()) + 1; 
+let fechaAño    = date.getUTCFullYear();
+
+//Ponemos el nombre del archivo
+let nombreArchivo = "todosUsuarios" + fechaDia + "_" + fechaMes + "_" + fechaAño + ".";
+var ws = wb.addWorksheet(nombreArchivo);
+
+//Creamos la ruta del excel
+const path = require('path');
+const pathExcel = path.join(__dirname, 'excel', nombreArchivo + '.xlsx');
+
+//Escribir o guardar
+wb.write(pathExcel, function(err, stats){
+  if(err) console.log(err);
+});
