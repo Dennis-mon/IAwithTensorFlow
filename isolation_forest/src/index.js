@@ -2,7 +2,7 @@
 //CARGAMOS TODOS LAS LIBRERÍAS NECESARIAS//
 //---------------------------------------//
 
-const IsolationForest = require('isolation-forest')
+const IsolationForest = require('isolation-forest') //https://www.npmjs.com/package/isolation-forest
 const loadCSVPercentage = require('./loadCSVPercentage')
 
 // para crear el canvas
