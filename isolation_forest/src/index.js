@@ -18,7 +18,7 @@ const green = "\x1b[32m";
 
 //Cargamos CSV 
 const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
-    `${pathCSV}prueba.csv`,
+    `${pathCSV}ejemplo-isolation-forest.csv`,
     ',',
     {
         shuffle: false,
@@ -29,7 +29,7 @@ const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
 )
 
 //creamos isolation forest
-var isolationForest = new IsolationForest.IsolationForest();
+var isolationForest = new IsolationForest.IsolationForest(100,);
 isolationForest.fit(features) // Type ObjectArray ({}[]); 
 
 var trainingScores = isolationForest.scores()
@@ -41,7 +41,7 @@ var scores = isolationForest.predict(features)
 var anomalies = [];
 var normal = [];
 
-console.log("scores", scores.length);
+
 //filtramos los anomalyScore mayores a 0.5
 scores.forEach( (element, index) =>{
     if(element > 0.5){  
@@ -64,6 +64,13 @@ normal.sort((a, b) => a.date - b.date);
 //cambiamos las fechas a string
 anomalies.map( element => { element.date = moment(element.date).format('YYYY-MM-DD HH:mm')  } );
 normal.map( element => { element.date = moment(element.date).format('YYYY-MM-DD HH:mm')  } );
+
+console.log("scores", scores.length);
+console.log("anomalias", anomalies.length);
+console.log("normal", normal.length);
+
+console.log("anomalias", anomalies);
+console.log("normal", normal);
 
 //transformamos los arrays en x,y para poder representarlos en el canvas
 var dataNormal = [];
@@ -126,7 +133,7 @@ const chart = new Chart(ctx, {
                     text: 'fecha'
                 },
                 ticks:{
-                    stepSize:15
+                    stepSize:16
                 }
             },
             y: {
