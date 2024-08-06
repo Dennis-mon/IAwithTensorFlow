@@ -6,6 +6,8 @@ const {Chart, registerables} = require('chart.js');
 const fs = require('fs');
 const { values } = require('lodash');
 
+require('chartjs-adapter-moment');
+const moment = require('moment');
 // Registrar todos los componentes necesarios
 Chart.register(...registerables);
 
@@ -44,12 +46,19 @@ var normal = [];
 
 //filtramos los anomalyScore mayores a 0.5
 scores.forEach( (element, index) =>{
-    if(element > 0.5) anomalies.push( 
-        {"valor":features[index][2], 
-        "date": new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4] ).toISOString().split('T')[0] } );
-    else normal.push( 
-        {"valor":features[index][2], 
-        "date": new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4] ).toISOString().split('T')[0] } );
+    if(element > 0.5){  
+        
+        let value = features[index][2];
+        date = new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4]);
+        date = moment(date).format('YYYY-MM-DD HH:mm')
+        anomalies.push({"valor": value, "date": date});
+    } 
+    else {
+        let value = features[index][2];
+        date = new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4]);
+        date = moment(date).format('YYYY-MM-DD HH:mm')
+        normal.push({"valor": value, "date": date});
+    }
 })
 
 //ordenamos de mayor a menos valor de anomalia
@@ -62,8 +71,6 @@ scores.forEach( (element, index) =>{
 
 var dataNormal = [];
 var dataAnomalies = [];
-
-var fechas = [];
 
 anomalies.forEach( element => {
     dataAnomalies.push( {x: element.date, y: element.valor } )
@@ -101,11 +108,21 @@ const chart = new Chart(ctx, {
     },
     options: {
         scales: {
-            y: {
+            x: {
                 type: 'time',
                 time: {
-                    unit: 'day', // Otras unidades: 'month', 'year', etc.
-                    tooltipFormat: 'll'
+                    unit: 'minute', // Otras unidades: 'month', 'year', etc.
+                    tooltipFormat: 'lll'
+                },
+                title:{
+                    display: true,
+                    text: 'fecha'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'valor'
                 }
             }
         }
