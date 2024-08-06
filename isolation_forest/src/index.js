@@ -1,22 +1,28 @@
 const IsolationForest = require('isolation-forest')
 const loadCSVPercentage = require('./loadCSVPercentage')
 
+//libria para crear el canvas
 const { createCanvas } = require('canvas');
+
+//libreria para crear los graficos
 const {Chart, registerables} = require('chart.js');
+
+//libreria para exportar en png el grafico
 const fs = require('fs');
 
+//librerias para adaptar fechas para el canvas
 require('chartjs-adapter-moment');
 const moment = require('moment');
+
 // Registrar todos los componentes necesarios
 Chart.register(...registerables);
 
+//ruta de los CSV
 const pathCSV = '../csv/';
 
-// Colores ANSI para console.log
-const reset = "\x1b[0m";
-const green = "\x1b[32m";
-
-//Cargamos CSV 
+//Cargamos CSV
+//en este caso usamos dataColumns para los datos de entrenamiento en un futuro
+//labelColum la utilizamos para organizar el grafico, pero no para los entrenamientos
 const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     `${pathCSV}ejemplo-isolation-forest.csv`,
     ',',
@@ -38,55 +44,39 @@ var trainingScores = isolationForest.scores()
 var scores = isolationForest.predict(features)
 
 //creamos array donde colocaremos objetos con el indice y valor de anomalia de los elementos raros.
-var anomalies = [];
-var normal = [];
-
+var datos = [];
 
 //filtramos los anomalyScore mayores a 0.5
 scores.forEach( (element, index) =>{
-    if(element > 0.5){  
-        
-        let value = features[index][2];
-        date = new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4]*15);
-        anomalies.push({"valor": value, "date": date});
-    } 
-    else {
-        let value = features[index][2];
-        date = new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4]*15);
-        normal.push({"valor": value, "date": date});
-    }
+
+    //si supera 0.5 de valor -> es anomalia = true
+    //sino -> no es anomalia = false
+    let tipo = (element > 0.5) ? true : false;
+
+    let value = features[index][2];
+    date = new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4]*15);
+    datos.push([{"valor": value, "date": date}, tipo]);
 })
 
 //ordenamos por fechas
-anomalies.sort((a, b) => a.date - b.date);
-normal.sort((a, b) => a.date - b.date);
+datos.sort((a, b) => a[0].date - b[0].date);
 
-//cambiamos las fechas a string
-anomalies.map( element => { element.date = moment(element.date).format('YYYY-MM-DD HH:mm')  } );
-normal.map( element => { element.date = moment(element.date).format('YYYY-MM-DD HH:mm')  } );
+//cambiamos las fechas a string para poder representarlas en el canvas
+datos.map( element => { element[0].date = moment(element[0].date).format('YYYY-MM-DD HH:mm')  } );
 
+//mostrar datos en terminal
 console.log("scores", scores.length);
-console.log("anomalias", anomalies.length);
-console.log("normal", normal.length);
+console.log("datos", datos.length);
+console.log("datos", datos);
 
-console.log("anomalias", anomalies);
-console.log("normal", normal);
-
-//transformamos los arrays en x,y para poder representarlos en el canvas
-var dataNormal = [];
-var dataAnomalies = [];
-
-anomalies.forEach( element => {
-    dataAnomalies.push( {x: element.date, y: element.valor } )
+//Creamos un array para representarlo en el canvas con los datos que queremos en el eje (x,y)
+var data = [];
+datos.forEach( element => {
+    data.push( {x: element[0].date , y: element[0].valor } )
 });
-
-normal.forEach( element => {
-    dataNormal.push( {x: element.date, y: element.valor } )
-});
-
 
 // Configuración del lienzo (canvas)
-const canvas = createCanvas(5000,5000);
+const canvas = createCanvas(2000,2000);
 const ctx = canvas.getContext('2d');
 
 const chart = new Chart(ctx, {
@@ -95,24 +85,14 @@ const chart = new Chart(ctx, {
         datasets: [
             {
                 label: 'Datos normales',
-                data: dataNormal,
+                data: data,
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
-                pointRadius: 5,
-                pointBackgroundColor: 'rgba(75,192,192,1)',
+                pointRadius: (context) => (datos[context.dataIndex][1]) ? 15 : 5 ,                 //anomalia = 10, NO anomalia = 5
+                pointBackgroundColor: (context) => (datos[context.dataIndex][1]) ? 'red' : 'blue', //anomalia = red, NO anomalia = blue
                 showLine: true
             },
-            {
-                label: 'Anomalias',
-                data: dataAnomalies,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                pointRadius: 5,
-                pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                showLine: true
-            },    
         ]
     },
     options: {
