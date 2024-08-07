@@ -2,8 +2,8 @@
 //CARGAMOS TODOS LAS LIBRERÍAS NECESARIAS//
 //---------------------------------------//
 
-const IsolationForest = require('isolation-forest') //https://www.npmjs.com/package/isolation-forest
-const loadCSVPercentage = require('./loadCSVPercentage')
+const { IsolationForest } = require('isolation-forest-visualization'); //https://www.npmjs.com/package/isolation-forest-visualization
+const loadCSVPercentage = require('../loadCSVPercentage')
 
 // para crear el canvas
 const { createCanvas } = require('canvas');
@@ -24,7 +24,6 @@ Chart.register(...registerables);
 //ruta de los CSV
 const pathCSV = '../csv/';
 
-
 //---------------------------------------//
 //          CARGAMOS EL CSV              //
 //---------------------------------------//
@@ -42,18 +41,14 @@ const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     }
 )
 
-
 //---------------------------------------//
 //      ALGORITMO DE ISOLATION FOREST    //
 //---------------------------------------//
 
-// creamos isolation forest y lo entrenamos con los valores de features
-var isolationForest = new IsolationForest.IsolationForest(100);
-isolationForest.fit(features) // Type ObjectArray ({}[]); 
+//creamos isolation forest
+var myForest = new IsolationForest(features, 200,  features.length);
 
-// predecimos valores de anomalia para las features
-var scores = isolationForest.predict(features)
-
+const scores = myForest.dataAnomalyScore(4);
 
 //---------------------------------------//
 //         REPRESENTACIÓN GRÁFICA        //
@@ -142,7 +137,9 @@ const chart = new Chart(ctx, {
     }
 });
 
-// guarda el gráfico como una imagen PNG
+//---------------------------------------//
+//           GUARDAMOS LA IMAGEN         //
+//---------------------------------------//
 const buffer = canvas.toBuffer('image/png');
-fs.writeFileSync('chart.png', buffer);
-console.log('Gráfico guardado en chart.png');
+fs.writeFileSync('resultados/algoritmo3.png', buffer);
+console.log('Gráfico guardado en resultados/algoritmo3.png');

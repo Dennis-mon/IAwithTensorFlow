@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/index.js"
+    "algoritmo1": "node ./algoritmo1/index.js",
+    "algoritmo2": "node ./algoritmo2/index.js",
+    "algoritmo3": "node ./algoritmo3/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +17,9 @@
     "chartjs-adapter-moment": "^1.0.1",
     "fs": "^0.0.1-security",
     "isolation-forest": "^0.0.9",
+    "isolation-forest-visualization": "^1.0.7",
     "lodash": "^4.17.21",
+    "ml-isolation-forest": "^0.1.0",
     "moment": "^2.30.1",
     "shuffle-seed": "^1.1.6"
   }

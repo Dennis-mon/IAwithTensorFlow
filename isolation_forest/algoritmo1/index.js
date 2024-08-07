@@ -1,28 +1,36 @@
-const { IsolationForest } = require('isolation-forest-visualization'); //https://www.npmjs.com/package/isolation-forest-visualization
-const loadCSVPercentage = require('./loadCSVPercentage')
+//---------------------------------------//
+//CARGAMOS TODOS LAS LIBRERÍAS NECESARIAS//
+//---------------------------------------//
 
-//libria para crear el canvas
+const IsolationForest = require('isolation-forest') //https://www.npmjs.com/package/isolation-forest
+const loadCSVPercentage = require('../loadCSVPercentage')
+
+// para crear el canvas
 const { createCanvas } = require('canvas');
 
-//libreria para crear los graficos
+// para crear los graficos
 const {Chart, registerables} = require('chart.js');
 
-//libreria para exportar en png el grafico
+// para exportar en png el grafico
 const fs = require('fs');
 
-//librerias para adaptar fechas para el canvas
+// para adaptar fechas para el canvas
 require('chartjs-adapter-moment');
 const moment = require('moment');
 
-// Registrar todos los componentes necesarios
+// registramos todos los componentes necesarios
 Chart.register(...registerables);
 
 //ruta de los CSV
 const pathCSV = '../csv/';
 
-//Cargamos CSV
-//en este caso usamos dataColumns para los datos de entrenamiento en un futuro
-//labelColum la utilizamos para organizar el grafico, pero no para los entrenamientos
+
+//---------------------------------------//
+//          CARGAMOS EL CSV              //
+//---------------------------------------//
+
+// en este caso usamos dataColumns para los datos de entrenamiento
+// labelColum la utilizamos para organizar el grafico, pero no para los entrenamientos
 const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     `${pathCSV}ejemplo-isolation-forest.csv`,
     ',',
@@ -34,36 +42,31 @@ const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
     }
 )
 
-const data = [[7, 3], [2, 5], [3, 4]];
 
-//creamos isolation forest
-var myForest = new IsolationForest(data, 100,  data.length);
+//---------------------------------------//
+//      ALGORITMO DE ISOLATION FOREST    //
+//---------------------------------------//
 
-const anomalyScores = myForest.dataAnomalyScore(2);
+// creamos isolation forest y lo entrenamos con los valores de features
+var isolationForest = new IsolationForest.IsolationForest(100);
+isolationForest.fit(features) // Type ObjectArray ({}[]); 
 
-console.log(anomalyScores);
-
-// export the forest
-myForest.exportForest('png', 'forestExport');
-
-
+// predecimos valores de anomalia para las features
+var scores = isolationForest.predict(features)
 
 
+//---------------------------------------//
+//         REPRESENTACIÓN GRÁFICA        //
+//---------------------------------------//
 
-
-/*
-
-
-
-
-//creamos array donde colocaremos objetos con el indice y valor de anomalia de los elementos raros.
+// creamos array donde colocaremos objetos con el indice y valor de anomalia de los elementos raros.
 var datos = [];
 
-//filtramos los anomalyScore mayores a 0.5
+// filtramos los anomalyScore mayores a 0.5
 scores.forEach( (element, index) =>{
 
-    //si supera 0.5 de valor -> es anomalia = true
-    //sino -> no es anomalia = false
+    // si supera 0.5 de valor -> es anomalia = true
+    // sino -> no es anomalia = false
     let tipo = (element > 0.5) ? true : false;
 
     let value = features[index][2];
@@ -71,24 +74,24 @@ scores.forEach( (element, index) =>{
     datos.push([{"valor": value, "date": date}, tipo]);
 })
 
-//ordenamos por fechas
+// ordenamos por fechas
 datos.sort((a, b) => a[0].date - b[0].date);
 
-//cambiamos las fechas a string para poder representarlas en el canvas
+// cambiamos las fechas a string para poder representarlas en el canvas
 datos.map( element => { element[0].date = moment(element[0].date).format('YYYY-MM-DD HH:mm')  } );
 
-//mostrar datos en terminal
+// mostrar datos en terminal
 console.log("scores", scores.length);
 console.log("datos", datos.length);
 console.log("datos", datos);
 
-//Creamos un array para representarlo en el canvas con los datos que queremos en el eje (x,y)
+// creamos un array para representarlo en el canvas con los datos que queremos en el eje (x,y)
 var data = [];
 datos.forEach( element => {
     data.push( {x: element[0].date , y: element[0].valor } )
 });
 
-// Configuración del lienzo (canvas)
+// configuración del lienzo (canvas)
 const canvas = createCanvas(2000,2000);
 const ctx = canvas.getContext('2d');
 
@@ -139,14 +142,9 @@ const chart = new Chart(ctx, {
     }
 });
 
-// Guarda el gráfico como una imagen PNG
+//---------------------------------------//
+//           GUARDAMOS LA IMAGEN         //
+//---------------------------------------//
 const buffer = canvas.toBuffer('image/png');
-fs.writeFileSync('chart.png', buffer);
-console.log('Gráfico guardado en chart.png');
-
-
-
-
-
-
-*/
+fs.writeFileSync('resultados/algoritmo1.png', buffer);
+console.log('Gráfico guardado en resultados/algoritmo1.png');
