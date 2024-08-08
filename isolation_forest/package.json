@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "algoritmo1": "node ./algoritmo1/index.js",
     "algoritmo2": "node ./algoritmo2/index.js",
-    "algoritmo3": "node ./algoritmo3/index.js"
+    "algoritmo3": "node ./algoritmo3/index.js",
+    "algoritmos": "node ./algoritmo1/index.js & node ./algoritmo2/index.js & node ./algoritmo3/index.js"
   },
   "author": "",
   "license": "ISC",

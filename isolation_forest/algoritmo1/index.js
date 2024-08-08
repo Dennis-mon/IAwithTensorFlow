@@ -25,6 +25,11 @@ Chart.register(...registerables);
 const pathCSV = '../csv/';
 
 
+console.log("//==========================================================//");
+console.log("//              >>>     ALGORITMO 1      <<<                //");
+console.log("//      >>>     LIBRERÍA: 'ISOLATION-FOREST'      <<<       //");
+console.log("//==========================================================//");
+
 //---------------------------------------//
 //          CARGAMOS EL CSV              //
 //---------------------------------------//
@@ -79,11 +84,6 @@ datos.sort((a, b) => a[0].date - b[0].date);
 
 // cambiamos las fechas a string para poder representarlas en el canvas
 datos.map( element => { element[0].date = moment(element[0].date).format('YYYY-MM-DD HH:mm')  } );
-
-// mostrar datos en terminal
-console.log("scores", scores.length);
-console.log("datos", datos.length);
-console.log("datos", datos);
 
 // creamos un array para representarlo en el canvas con los datos que queremos en el eje (x,y)
 var data = [];
@@ -147,4 +147,4 @@ const chart = new Chart(ctx, {
 //---------------------------------------//
 const buffer = canvas.toBuffer('image/png');
 fs.writeFileSync('resultados/algoritmo1.png', buffer);
-console.log('Gráfico guardado en resultados/algoritmo1.png');
+console.log('\nGráfico guardado en resultados/algoritmo1.png\n');
