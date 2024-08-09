@@ -51,9 +51,15 @@ const { features , labels, testFeatures, testLabels } = loadCSVPercentage(
 //---------------------------------------//
 
 //creamos isolation forest
-var myForest = new IsolationForest(features, 200,  features.length);
+var myForest = new IsolationForest(features, 5,  features.length);
 
 const scores = myForest.dataAnomalyScore(4);
+
+// export the tree on index 0
+myForest.exportTree(myForest.forest[0], 'png', 'tree');
+
+// export the forest
+myForest.exportForest('png', 'forestExport');
 
 //---------------------------------------//
 //         REPRESENTACIÓN GRÁFICA        //
@@ -67,7 +73,7 @@ scores.forEach( (element, index) =>{
 
     // si supera 0.5 de valor -> es anomalia = true
     // sino -> no es anomalia = false
-    let tipo = (element > 0.5) ? true : false;
+    let tipo = (element > 0.51) ? true : false;
 
     let value = features[index][2];
     date = new Date( labels[index][0],labels[index][1],labels[index][2],labels[index][3],labels[index][4]*15);
@@ -143,3 +149,5 @@ const chart = new Chart(ctx, {
 const buffer = canvas.toBuffer('image/png');
 fs.writeFileSync('resultados/algoritmo3.png', buffer);
 console.log('\nGráfico guardado en resultados/algoritmo3.png\n');
+
+//myForest.exportForest('png', 'forestExport');
