@@ -56,10 +56,10 @@ var myForest = new IsolationForest(features, 5,  features.length);
 const scores = myForest.dataAnomalyScore(4);
 
 // export the tree on index 0
-myForest.exportTree(myForest.forest[0], 'png', 'tree');
+myForest.exportTree(myForest.forest[0], 'png', './algoritmo3/img/tree');
 
 // export the forest
-myForest.exportForest('png', 'forestExport');
+myForest.exportForest('png', './algoritmo3/img/forest/forestExport');
 
 //---------------------------------------//
 //         REPRESENTACIÓN GRÁFICA        //
@@ -149,5 +149,3 @@ const chart = new Chart(ctx, {
 const buffer = canvas.toBuffer('image/png');
 fs.writeFileSync('resultados/algoritmo3.png', buffer);
 console.log('\nGráfico guardado en resultados/algoritmo3.png\n');
-
-//myForest.exportForest('png', 'forestExport');
